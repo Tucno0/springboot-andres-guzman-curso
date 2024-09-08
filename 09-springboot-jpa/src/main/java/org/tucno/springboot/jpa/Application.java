@@ -29,7 +29,7 @@ public class Application implements CommandLineRunner {
 //        findOne();
 //        list();
 //        create();
-//        update();
+        update();
 //        delete();
 //        delete2();
 //        personalizedQueries();
@@ -38,7 +38,7 @@ public class Application implements CommandLineRunner {
 //        personalizedQueriesAgregrationFunctions();
 //        personalizedQueriesBetweenOrderBy();
 //        funcionesDeAgregacion();
-        subqueries();
+//        subqueries();
     }
 
     // readOnly = true indica que el método no realizará operaciones de escritura en la base de datos.
