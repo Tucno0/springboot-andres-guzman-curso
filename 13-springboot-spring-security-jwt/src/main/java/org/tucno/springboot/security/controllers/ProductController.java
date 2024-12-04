@@ -4,16 +4,21 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.tucno.springboot.security.entities.Product;
 import org.tucno.springboot.security.services.ProductService;
+import org.tucno.springboot.security.validators.groups.OnCreate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// La anotación @CrossOrigin se utiliza para permitir las solicitudes de recursos de origen cruzado (CORS) desde el origen http://localhost:4200 a la ruta /products
+@CrossOrigin(origins = "http://localhost:4200", originPatterns = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -25,12 +30,16 @@ public class ProductController {
 //    private ProductValidator productValidator;
 
     @GetMapping
+    // La anotación @PreAuthorize se utiliza para definir reglas de autorización en los métodos de un controlador
+    // Se ejecuta antes de que se ejecute el método y se encarga de comprobar si el usuario tiene los roles necesarios para acceder al método
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Se requiere que el usuario tenga el rol ADMIN o USER para acceder a la ruta /products
     public List<Product> findAll() {
         return productService.findAll();
     }
 
     // @GetMapping indica que el método se ejecuta cuando se hace una petición GET
     // @PathVariable indica que el valor de la variable id se recibe en la URL
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Se requiere que el usuario tenga el rol ADMIN o USER para acceder a la ruta /products
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<Product> productOptional = productService.findById(id);
@@ -46,9 +55,11 @@ public class ProductController {
     // ResponseEntity<Product> indica que el método devuelve un objeto de tipo Product
     // @RequestBody indica que el objeto product se va a recibir en el cuerpo de la petición
     // @Valid valida el objeto product con las anotaciones de validación de la clase Product
+    // @Validated(OnCreate.class) indica que se van a validar las anotaciones de validación del grupo OnCreate de la clase Product
     // BindingResult result almacena los errores de validación
+    @PreAuthorize("hasRole('ADMIN')") // Se requiere que el usuario tenga el rol ADMIN para acceder a la ruta /products mediante el método POST
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody Product product, BindingResult result) {
+    public ResponseEntity<?> save(@Validated(OnCreate.class) @RequestBody Product product, BindingResult result) {
         // Se valida el objeto product con el validador productValidator
 //        productValidator.validate(product, result);
 
@@ -66,6 +77,7 @@ public class ProductController {
     // BindingResult result almacena los errores de validación
     // @PathVariable indica que el valor de la variable id se recibe en la URL
     // El BindingResult debe ir después del objeto que se va a validar
+    @PreAuthorize("hasRole('ADMIN')") // Se requiere que el usuario tenga el rol ADMIN para acceder a la ruta /products/{id} mediante el método PUT
     @PutMapping("/{id}")
     public ResponseEntity<?> update( @Valid @RequestBody Product product, BindingResult result, @PathVariable Long id) {
         // Se valida el objeto product con el validador productValidator
@@ -84,12 +96,14 @@ public class ProductController {
             productUpdated.setName(product.getName());
             productUpdated.setPrice(product.getPrice());
             productUpdated.setDescription(product.getDescription());
+            // Preferible usar el método update de la clase ProductService
             return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productUpdated));
         }
 
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Optional<Product> productOptional = productService.delete(id);

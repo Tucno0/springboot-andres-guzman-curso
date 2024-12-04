@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.tucno.springboot.security.validators.ExistsInDb;
 import org.tucno.springboot.security.validators.IsRequired;
+import org.tucno.springboot.security.validators.groups.OnCreate;
 
 @Entity
 @Table(name = "products")
@@ -12,20 +13,20 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ExistsInDb
-    @IsRequired
+    @ExistsInDb(groups = {OnCreate.class}) // groups = {OnCreate.class} indica que la validación se ejecuta solo en el grupo OnCreate
+    @IsRequired(groups = {OnCreate.class})
     private String sku;
 
-    @NotEmpty(message = "{NotEmpty.product.name}")
-    @Size(min = 3, max = 50)
+    @NotEmpty(message = "{NotEmpty.product.name}", groups = {OnCreate.class})
+    @Size(min = 3, max = 50, groups = {OnCreate.class})
     private String name;
 
-    @Min(500)
-    @NotNull
+    @Min(value = 500, groups = {OnCreate.class})
+    @NotNull(groups = {OnCreate.class})
     private Double price;
 
 //    @NotBlank
-    @IsRequired( message = "{IsRequired.product.description}") // Validación personalizada
+    @IsRequired( message = "{IsRequired.product.description}", groups = {OnCreate.class}) // Validación personalizada
     private String description;
 
     public Product() {

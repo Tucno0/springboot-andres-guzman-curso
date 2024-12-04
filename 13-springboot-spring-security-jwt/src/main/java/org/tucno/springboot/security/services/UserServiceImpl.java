@@ -58,4 +58,9 @@ public class UserServiceImpl implements UserService {
         // Se guarda el usuario en la base de datos
         return userRepository.save(user);
     }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return !userRepository.existsByUsername(username);
+    }
 }
