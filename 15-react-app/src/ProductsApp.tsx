@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Product } from "./interfaces/product.interface";
-import { initProducts } from "./services/product.service";
+import {create, findAll, remove, update} from "./services/product.service";
 import { ProductGrid } from "./components/ProductGrid";
 import { ProductForm } from "./components/ProductForm";
 
@@ -13,23 +13,33 @@ export const ProductsApp = () => {
     description: "",
   });
 
+  const getProducts = async () => {
+    const result = await findAll();
+    setProducts(result._embedded.products);
+  }
+
   useEffect(() => {
-    setProducts(initProducts);
+    getProducts();
   }, []);
 
-  const handleAddProduct = (newProduct: Product) => {
+  const handleAddProduct = async (newProduct: Product) => {
     if (products.some((prod) => prod.id === newProduct.id)) {
+      const resp = await update(newProduct);
+      console.log(resp);
       setProducts(
         products.map((prod) =>
-          prod.id === newProduct.id ? { ...newProduct } : prod
+          prod.id === resp.id ? { ...resp } : prod
         )
       );
     } else {
-      setProducts([...products, newProduct]);
+      const resp = await create(newProduct);
+      console.log(resp)
+      setProducts([...products, resp]);
     }
   };
 
   const handleDeleteProduct = (id: string) => {
+    remove(id);
     setProducts(products.filter((product) => product.id !== id));
   };
 

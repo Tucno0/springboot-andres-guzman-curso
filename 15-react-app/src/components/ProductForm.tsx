@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const ProductForm = ({ onAddProduct, selectedProduct }: Props) => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Product>({
     id: "",
     name: "",
     price: 0,
@@ -25,7 +25,7 @@ export const ProductForm = ({ onAddProduct, selectedProduct }: Props) => {
     }
 
     onAddProduct({
-      id: selectedProduct.id || Date.now().toString(),
+      id: selectedProduct.id || undefined,
       name,
       price,
       description,
