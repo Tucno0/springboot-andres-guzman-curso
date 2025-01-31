@@ -1,0 +1,85 @@
+<div class="container mt-4">
+  <h2>{{ product.id ? "Actualizar Producto" : "Agregar Producto" }}</h2>
+
+  @if (successMessage) {
+  <div class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+  } @if (errorMessage) {
+  <div class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+  }
+
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <div class="form-group">
+      <label for="name">Nombre del Producto</label>
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        required
+        [(ngModel)]="product.name"
+        name="name"
+        #name="ngModel"
+      />
+      <div
+        *ngIf="name.invalid && (name.dirty || name.touched)"
+        class="alert alert-danger"
+      >
+        El nombre es requerido.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Precio</label>
+      <input
+        type="number"
+        id="price"
+        class="form-control"
+        required
+        [(ngModel)]="product.price"
+        name="price"
+        #price="ngModel"
+      />
+      <div
+        *ngIf="price.invalid && (price.dirty || price.touched)"
+        class="alert alert-danger"
+      >
+        El precio es requerido.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <textarea
+        id="description"
+        class="form-control"
+        required
+        [(ngModel)]="product.description"
+        name="description"
+        #description="ngModel"
+      ></textarea>
+      <div
+        *ngIf="
+          description.invalid && (description.dirty || description.touched)
+        "
+        class="alert alert-danger"
+      >
+        La descripción es requerida.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="productForm.invalid"
+    >
+      {{ product.id ? "Actualizar" : "Agregar" }}
+    </button>
+
+    <button type="button" class="btn btn-secondary" (click)="resetForm()">
+      Cancelar
+    </button>
+  </form>
+</div>

@@ -1,0 +1,86 @@
+<style>
+  h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #f2f2f2;
+  }
+
+  p {
+    color: #333;
+    text-align: center;
+  }
+</style>
+
+<h1>Products</h1>
+
+@if ( products.length > 0) {
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (product of products; track $index) {
+    <tr>
+      <td>{{ product.id }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.description }}</td>
+      <td>{{ product.price }}</td>
+      <td>
+        <button type="button" (click)="onEditProduct(product)">Edit</button>
+        <button type="button" (click)="onDeleteProduct(product.id)">
+          Delete
+        </button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+} @else {
+<p>No products found</p>
+}
+
+<app-form
+  (productCreated)="onProductCreated($event)"
+  [product]="selectedProduct"
+/>
