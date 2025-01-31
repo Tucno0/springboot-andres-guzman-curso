@@ -28,18 +28,28 @@ export class ProductComponent implements OnInit {
 
   onProductCreated(product: Product): void {
     if (product.id > 0) {
-      this.products = this.products.map((p) => {
-        if (p.id === product.id) {
-          return { ...product };
-        }
-        return p;
+      this.productsService.update(product).subscribe({
+        next: (product) => {
+          this.products = this.products.map((p) => {
+            if (p.id === product.id) {
+              return { ...product };
+            }
+            return p;
+          });
+        },
+        error: (error) => {
+          console.error(error);
+        },
       });
     } else {
-      product.id = this.products.length + 1;
-      this.products = [
-        ...this.products,
-        { ...product, id: this.products.length + 1 },
-      ];
+      this.productsService.create(product).subscribe({
+        next: (product) => {
+          this.products = [...this.products, { ...product }];
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
     }
   }
 
@@ -48,6 +58,14 @@ export class ProductComponent implements OnInit {
   }
 
   onDeleteProduct(productId: number): void {
-    this.products = this.products.filter((p) => p.id !== productId);
+    // this.products = this.products.filter((p) => p.id !== productId);
+    this.productsService.delete(productId).subscribe({
+      next: (product) => {
+        this.products = this.products.filter((p) => p.id !== product.id);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }
